@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Приложение</title>
+    <style>
+        .container{
+            max-width: 1340px;
+            width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+        /* Стили для формы */
+        .form {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 18px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        input[type="text"] {
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            font-size: 18px;
+            padding: 5px;
+            width: 50px;
+            text-align: center;
+        }
+
+        button {
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 18px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #3e8e41;
+        }
+
+        /* Стили для галереи */
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .gallery img {
+            margin: 10px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            max-width: 250px;
+            max-height: 250px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        .gallery img:hover {
+            border-color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form">
+        <label for="page-input">Номер страницы:</label>
+        <input type="text" id="page-input">
+
+        <label for="limit-input">Лимит:</label>
+        <input type="text" id="limit-input">
+
+        <button id="request-btn">Запрос</button>
+    </div>
+
+    <div id="result" class="gallery"></div>
+</div>
+<script>
+    const pageInput = document.getElementById('page-input');
+    const limitInput = document.getElementById('limit-input');
+    const requestBtn = document.getElementById('request-btn');
+    const resultDiv = document.getElementById('result');
+
+    let lastPage = localStorage.getItem('lastPage') || 1;
+    let lastLimit = localStorage.getItem('lastLimit') || 10;
+
+    pageInput.value = lastPage;
+    limitInput.value = lastLimit;
+
+    requestBtn.addEventListener('click', () => {
+        const page = parseInt(pageInput.value);
+        const limit = parseInt(limitInput.value);
+
+        if (isNaN(page) || page < 1 || page > 10) {
+            resultDiv.innerText = 'Номер страницы вне диапазона от 1 до 10';
+            return;
+        }
+
+        if (isNaN(limit) || limit < 1 || limit > 10) {
+            resultDiv.innerText = 'Лимит вне диапазона от 1 до 10';
+            return;
+        }
+
+        localStorage.setItem('lastPage', page);
+        localStorage.setItem('lastLimit', limit);
+
+        resultDiv.innerHTML = '';
+
+        fetch(`https://picsum.photos/v2/list?page=${page}&limit=${limit}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(item => {
+                    const img = document.createElement('img');
+                    img.src = item.download_url;
+                    resultDiv.appendChild(img);
+                });
+            })
+            .catch(error => {
+                console.error(error);
+                resultDiv.innerText = 'Ошибка при выполнении запроса';
+            });
+    });
+</script>
+</body>
+</html>

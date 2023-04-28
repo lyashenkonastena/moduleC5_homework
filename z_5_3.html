@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Приложение</title>
+    <style>
+        #result {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .image-container {
+            margin: 10px;
+            text-align: center;
+        }
+        img {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+        .author {
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+<input type="number" id="numberInput">
+<button onclick="handleButtonClick()">Отправить</button>
+<div id="result"></div>
+<script>
+    function handleButtonClick() {
+        const number = document.getElementById("numberInput").value;
+        if (number < 1 || number > 10) {
+            document.getElementById("result").textContent = "Число вне диапазона от 1 до 10";
+        } else {
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", `https://picsum.photos/v2/list?limit=${number}`, true);
+            xhr.onload = function() {
+                const response = JSON.parse(xhr.responseText);
+                const resultDiv = document.getElementById("result");
+                resultDiv.innerHTML = "";
+                response.forEach(function(item) {
+                    const container = document.createElement("div");
+                    container.classList.add("image-container");
+                    const image = document.createElement("img");
+                    image.src = item.download_url;
+                    const author = document.createElement("div");
+                    author.classList.add("author");
+                    author.textContent = `Автор: ${item.author}`;
+                    container.appendChild(image);
+                    container.appendChild(author);
+                    resultDiv.appendChild(container);
+                });
+            };
+            xhr.send();
+        }
+    }
+</script>
+</body>
+</html>

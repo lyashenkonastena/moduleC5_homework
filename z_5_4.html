@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Приложение</title>
+  </head>
+  <body>
+    <input type="text" id="numberInput1">
+    <input type="text" id="numberInput2">
+    <button onclick="handleButtonClick()">Отправить</button>
+    <div id="result"></div>
+    <script>
+      function handleButtonClick() {
+        const number1 = parseInt(document.getElementById("numberInput1").value);
+        const number2 = parseInt(document.getElementById("numberInput2").value);
+        if (isNaN(number1) || isNaN(number2) || number1 < 100 || number1 > 300 || number2 < 100 || number2 > 300) {
+          document.getElementById("result").textContent = "Одно из чисел вне диапазона от 100 до 300";
+        } else {
+          fetch(`https://picsum.photos/${number1}/${number2}`)
+            .then(function(response) {
+              const resultDiv = document.getElementById("result");
+              const image = document.createElement("img");
+              image.src = response.url;
+              resultDiv.innerHTML = "";
+              resultDiv.appendChild(image);
+            })
+            .catch(function(error) {
+              console.log(error);
+            });
+        }
+      }
+    </script>
+  </body>
+</html>
